@@ -1,11 +1,10 @@
 const createRouter = require('express').Router;
+const helloController = require('../app/controllers/api/helloController');
 
 module.exports = app => {
     const router = createRouter();
 
-    router.all('/', (req, res, next) => {
-        res.json({ Hello: 'there!'});
-    });
+    router.all('/', helloController.getHello);
 
     router.use((req, res, next) => {
         next(new Error('Not found'));
