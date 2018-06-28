@@ -1,5 +1,7 @@
 const { isNil, defaults, omit } = require('lodash');
+const config = require('../../config');
 const bcrypt = require('bcrypt');
+const jwt = require('jwt-simple');
 const userRepository = require('../repositories/userRepository');
 const NotFound = require('../errors/NotFound');
 const Unauthorized = require('../errors/Unauthorized');
@@ -78,6 +80,52 @@ const authenticate = (credentials) => {
         });
 };
 
-exports.userLogin = (credentials) => {
-    return authenticate(credentials);
+exports.userLogin = (loginCredentials) => {
+    return authenticate(loginCredentials)
+        .then(user => [
+            user,
+            {
+                accessToken: jwt.encode(
+                    {
+                        type: 'access',
+                        user,
+                        iat: Date.now(),
+                        exp: Date.now() + 3600 * 1000,
+                    },
+                    config.auth.jwtSecret
+                ),
+                refreshToken: jwt.encode(
+                    {
+                        type: 'refresh',
+                        user,
+                        iat: Date.now(),
+                        exp: Date.now() + 3600 * 1000 * 24 * 14,
+                    },
+                    config.auth.jwtSecret
+                ),
+            }
+        ])
+        .then(([user, credentials]) => (
+            {
+                user,
+                credentials,
+            }
+        ));
+};
+
+exports.authenticateAccessToken = (token) => {
+    if (!token) {
+        return Promise.resolve(null);
+    }
+    return Promise.resolve()
+        .then(() => jwt.decode(token, config.auth.jwtSecret))
+        .then(unpacked => {
+            // Check expiration?
+            // Check against a database?
+            return userRepository.detail(unpacked.user.id);
+        })
+        .catch(error => {
+            console.error(error.message);
+            return null;
+        });
 };

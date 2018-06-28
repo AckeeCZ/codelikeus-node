@@ -10,6 +10,11 @@ const invalidObjectIdToNull = error => {
     throw error;
 }
 
+const remapId = (x) => {
+    x.id = x._id;
+    return omit(x, '_id');
+}
+
 const create = (data) => {
     return User.create(data);
 };
@@ -19,12 +24,13 @@ const list = (params = {}) => {
     const offset = parseInt(params.offset) || 0;
     params = omit(params, ['limit', 'offset']);
     return User.find(params)
-        .then(x => x.map(y => y.toJSON()));
+        .then(x => x.map(y => y.toJSON()).map(remapId));
 };
 
 const detail = (id, params = {}) => {
     return User.findById(id)
         .then(x => x.toJSON())
+        .then(remapId)
         .catch(invalidObjectIdToNull);
 };
 

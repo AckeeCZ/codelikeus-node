@@ -1,4 +1,6 @@
 const userService = require('../../services/userService');
+const bearer = require('../utils/bearer');
+const compose = require('compose-middleware').compose;
 
 exports.getUsers = (req, res, next) => {
     userService.userList(req.query)
@@ -6,11 +8,14 @@ exports.getUsers = (req, res, next) => {
         .catch(next);
 };
 
-exports.getUser = (req, res, next) => {
-    userService.userDetail(req.params.userId)
-        .then(out => res.json(out))
-        .catch(next);
-};
+exports.getUser = compose(
+    bearer,
+    (req, res, next) => {
+        userService.userDetail(req.params.userId)
+            .then(out => res.json(out))
+            .catch(next);
+    }
+);
 
 exports.postUsers = (req, res, next) => {
     userService.userCreate(req.body)
