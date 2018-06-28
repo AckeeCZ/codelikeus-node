@@ -2,6 +2,14 @@ const { omit } = require('lodash');
 const mongoose = require('../database').instance.mongoose;
 const User = mongoose.model('User');
 
+const invalidObjectIdToNull = error => {
+    // Invalid id means 
+    if (/^Cast to ObjectId failed/.test(error.message)) {
+        return null;
+    }
+    throw error;
+}
+
 const create = (data) => {
     return User.create(data);
 };
@@ -16,12 +24,14 @@ const list = (params = {}) => {
 
 const detail = (id, params = {}) => {
     return User.findById(id)
-        .then(x => x.toJSON());
+        .then(x => x.toJSON())
+        .catch(invalidObjectIdToNull);
 };
 
 const update = (id, data) => {
     return User.findByIdAndUpdate(id, data)
-        .then(() => detail(id));
+        .then(() => detail(id))
+        .catch(invalidObjectIdToNull);
 };
 
 module.exports = {

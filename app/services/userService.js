@@ -1,11 +1,20 @@
 const userRepository = require('../repositories/userRepository');
+const NotFound = require('../errors/NotFound');
+
+const throwOnEmpty = (error) => (value) => {
+    if (value) {
+        return value;
+    }
+    throw error;
+}
 
 exports.userList = (params) => {
     return userRepository.list(params);
 };
 
 exports.userDetail = (userId, params) => {
-    return userRepository.detail(userId);
+    return userRepository.detail(userId)
+        .then(throwOnEmpty(new NotFound()));
 };
 
 exports.userUpdate = (userId, data, params) => {

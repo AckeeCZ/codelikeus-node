@@ -1,4 +1,6 @@
 const createRouter = require('express').Router;
+const HttpError = require('../app/errors/HttpError');
+const NotFound = require('../app/errors/NotFound');
 const { jsonParser } = require('../app/server');
 const helloController = require('../app/controllers/api/helloController');
 const userController = require('../app/controllers/api/userController');
@@ -16,10 +18,14 @@ module.exports = app => {
     router.put('/api/v1/users/:userId', userController.putUser);
 
     router.use((req, res, next) => {
-        next(new Error('Not found'));
+        next(new NotFound('Route does not exist'));
     });
     router.use((error, req, res, next) => {
-        res.status(500);
+        if (error instanceof HttpError) {
+            res.status(error.code);
+        } else {
+            res.status(500);
+        }
         res.json({ 
             message: error.message,
             stack: error.stack,
