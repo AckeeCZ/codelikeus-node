@@ -11,6 +11,7 @@ module.exports = app => {
 
     router.all('/', helloController.getHello);
 
+    router.post('/api/v1/auth', userController.getAuth);
     router.get('/api/v1/users', userController.getUsers);
     router.get('/api/v1/users/:userId', userController.getUser);
     router.post('/api/v1/users', userController.postUsers);

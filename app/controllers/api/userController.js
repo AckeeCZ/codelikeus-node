@@ -34,3 +34,11 @@ exports.deleteUser = (req, res, next) => {
         })
         .catch(next);
 };
+
+exports.getAuth = (req, res, next) => {
+    userService.userLogin(req.body)
+        .then(out => {
+            res.json(out);
+        })
+        .catch(next);
+};
