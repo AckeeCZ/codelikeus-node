@@ -1,10 +1,13 @@
 const { isNil, defaults, omit } = require('lodash');
 const config = require('../../config');
 const bcrypt = require('bcrypt');
-const jwt = require('jwt-simple');
 const userRepository = require('../repositories/userRepository');
 const NotFound = require('../errors/NotFound');
 const Unauthorized = require('../errors/Unauthorized');
+const JwtTokenFactory = require('../comonents/JwtTokenFactory');
+
+const tokenFactory = JwtTokenFactory(config.auth.jwtSecret);
+
 
 const throwOnEmpty = (error) => (value) => {
     if (value) {
@@ -89,23 +92,19 @@ exports.userLogin = (loginCredentials) => {
         .then(user => [
             user,
             {
-                accessToken: jwt.encode(
+                accessToken: tokenFactory.pack(
                     {
                         type: 'access',
                         user,
-                        iat: Date.now(),
                         exp: Date.now() + 3600 * 1000,
-                    },
-                    config.auth.jwtSecret
+                    }
                 ),
-                refreshToken: jwt.encode(
+                refreshToken: tokenFactory.pack(
                     {
                         type: 'refresh',
                         user,
-                        iat: Date.now(),
                         exp: Date.now() + 3600 * 1000 * 24 * 14,
-                    },
-                    config.auth.jwtSecret
+                    }
                 ),
             }
         ])
@@ -122,7 +121,7 @@ exports.authenticateAccessToken = (token) => {
         return Promise.resolve(null);
     }
     return Promise.resolve()
-        .then(() => jwt.decode(token, config.auth.jwtSecret))
+        .then(() => tokenFactory.unpack(token))
         .then(unpacked => {
             // Check expiration?
             // Check against a database?
