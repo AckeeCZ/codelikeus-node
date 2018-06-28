@@ -1,4 +1,7 @@
+const helloService = require('../../services/helloService');
 
 exports.getHello = (req, res, next) => {
-    res.json({ hello: 'there' });
+    helloService.sayHello()
+        .then(out => res.json(out))
+        .catch(next);
 };
