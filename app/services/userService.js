@@ -32,11 +32,15 @@ const passwordHash = (data) => {
         ));
 };
 
+
 exports.userList = (params) => {
     return userRepository.list(params);
 };
 
-exports.userDetail = (userId, params) => {
+exports.userDetail = (userId, context) => {
+    if (!context.user) {
+        return Promise.reject(new Unauthorized('Auth required'));
+    }
     return userRepository.detail(userId)
         .then(throwOnEmpty(new NotFound()))
         .then(x => omit(x, ['password']));

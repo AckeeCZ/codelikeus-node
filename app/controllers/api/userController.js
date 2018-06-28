@@ -1,5 +1,6 @@
 const userService = require('../../services/userService');
 const bearer = require('../utils/bearer');
+const withHttpContext = require('../utils/withHttpContext');
 const compose = require('compose-middleware').compose;
 
 exports.getUsers = (req, res, next) => {
@@ -10,8 +11,9 @@ exports.getUsers = (req, res, next) => {
 
 exports.getUser = compose(
     bearer,
+    withHttpContext,
     (req, res, next) => {
-        userService.userDetail(req.params.userId)
+        userService.userDetail(req.params.userId, req.context)
             .then(out => res.json(out))
             .catch(next);
     }
