@@ -1,6 +1,9 @@
+const config = require('./config');
+
+require('./app/database').init(config.database);
+
 const server = require('./app/server');
 const routes = require('./config/routes');
-const config = require('./config');
 
 routes(server.app);
 
