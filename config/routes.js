@@ -1,9 +1,11 @@
 const createRouter = require('express').Router;
+const { jsonParser } = require('../app/server');
 const helloController = require('../app/controllers/api/helloController');
 const userController = require('../app/controllers/api/userController');
 
 module.exports = app => {
     const router = createRouter();
+    router.use(jsonParser());
 
     router.all('/', helloController.getHello);
 

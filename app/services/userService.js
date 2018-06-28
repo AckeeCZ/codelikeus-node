@@ -1,14 +1,15 @@
+const userRepository = require('../repositories/userRepository');
 
 exports.userList = (params) => {
-    return Promise.reject(new Error('Not Implemented'));
+    return userRepository.list(params);
 };
 
 exports.userDetail = (userId, params) => {
-    return Promise.reject(new Error('Not Implemented'));
+    return userRepository.detail(userId);
 };
 
 exports.userUpdate = (userId, data, params) => {
-    return Promise.reject(new Error('Not Implemented'));
+    return userRepository.update(userId, data);
 };
 
 exports.userDelete = (userId, params) => {
@@ -16,5 +17,5 @@ exports.userDelete = (userId, params) => {
 };
 
 exports.userCreate = (data, params) => {
-    return Promise.reject(new Error('Not Implemented'));
+    return userRepository.create(data);
 };
