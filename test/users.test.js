@@ -4,11 +4,16 @@ const request = require('supertest-as-promised');
 const app = require('../index');
 
 const asUser = (app, email, password = '123456') => {
+    let signIn = null;
+
     const makeRequest = (method, path) => {
-        return request(app)[method](path);
+        const req = request(app)[method](path);
+        if (signIn && signIn.credentials) {
+            req.set('Authorization', `Bearer ${signIn.credentials.accessToken}`);
+        }
+        return req;
     };
 
-    let signIn = null;
     return {
         do: {
             register: () => {
@@ -52,9 +57,9 @@ describe('Users', () => {
     });
     it('Detail', () => {
         return user.do.get(`/api/v1/users/${user.user.id}`)
-            .expect(200) /* Whoops! No token sent!? */
+            .expect(200)
             .then(({ body }) => {
-                console.log(body)
+                expect(body.id).to.equal(user.user.id);
             });
     });
 });
