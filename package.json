@@ -5,12 +5,19 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "start-lr": "nodemon --exec \"npm start\""
+    "start-lr": "nodemon --exec \"npm start\"",
+    "test": "mocha test/**/*.js",
+    "test-lr": "nodemon --exec \"mocha test/**/*.js\""
   },
   "author": "jiri.smolik@ackee.cz",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^1.17.5"
+    "chai": "^4.1.2",
+    "expect": "^23.2.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.17.5",
+    "supertest": "^3.1.0",
+    "supertest-as-promised": "^4.0.2"
   },
   "dependencies": {
     "bcrypt": "^2.0.1",
