@@ -10,3 +10,5 @@ routes(server.app);
 server.start(config.server.port)
     .then((port) => console.log(`Server listening on ${port}`))
     .catch(error => console.error(`Server failed to start: ${error.message}`));
+
+module.exports = server.app;
