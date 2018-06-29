@@ -2,6 +2,11 @@ const expect = require('chai').expect;
 const request = require('supertest-as-promised');
 
 const app = require('../index');
+const database = require('../app/database/index').instance;
+
+const prepEnv = () => {
+    return database.mongoose.dropDatabase();
+};
 
 const asUser = (app, email, password = '123456') => {
     let signIn = null;
@@ -41,8 +46,8 @@ const asUser = (app, email, password = '123456') => {
 describe('Users', () => {
     const user = asUser(app, 'abc');
     before(() => {
-        return user.do.register()
-            .catch(() => null/* Whoops, Rregistraion failure when not emptying the db */)
+        return prepEnv()
+            .then(() => user.do.register())
             .then(() => user.do.login());
     });
 
